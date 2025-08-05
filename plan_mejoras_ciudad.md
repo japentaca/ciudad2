@@ -266,6 +266,116 @@ ciudad2/
 - Preservar el rendimiento actual como línea base
 - Documentar cambios para facilitar la migración
 
+### Protocolo de Testing y Validación
+
+#### Testing Automático por Agente
+Cada implementación debe seguir este protocolo:
+1. **Verificación de Sintaxis**: Comprobar que no hay errores de JavaScript
+2. **Testing de Consola**: Ejecutar la aplicación y verificar ausencia de errores en DevTools
+3. **Pruebas de Funcionalidad**: Validar que las nuevas características funcionan correctamente
+4. **Pruebas de Regresión**: Asegurar que funcionalidades existentes no se rompan
+5. **Testing de Rendimiento**: Verificar que el FPS se mantiene estable
+
+#### Validación por Usuario
+Después del testing automático:
+1. **Demostración Visual**: Mostrar la funcionalidad implementada en el navegador
+2. **Explicación de Cambios**: Describir qué se añadió/modificó
+3. **Solicitud de Feedback**: Pedir confirmación del usuario antes de continuar
+4. **Documentación de Issues**: Registrar cualquier problema reportado
+
+#### Criterios de Aceptación
+- ✅ **Sin errores en consola del navegador**
+- ✅ **Funcionalidad nueva operativa**
+- ✅ **Funcionalidades existentes intactas**
+- ✅ **Rendimiento mantenido (>30 FPS mínimo)**
+- ✅ **Aprobación explícita del usuario**
+
+#### Rollback en Caso de Problemas
+- Mantener backup de versión anterior
+- Procedimiento de reversión rápida
+- Documentación de errores para futuras iteraciones
+
+### Sistema de Control y Seguimiento de Etapas
+
+#### Documentación de Progreso
+Cada etapa implementada será documentada con:
+
+**1. Log de Implementación**
+```
+ETAPA: [Nombre de la etapa]
+FECHA: [Fecha de implementación]
+ARCHIVOS MODIFICADOS:
+- archivo1.js (líneas X-Y): [descripción del cambio]
+- archivo2.js (nuevo): [funcionalidad añadida]
+TESTS REALIZADOS:
+- ✅ Sintaxis verificada
+- ✅ Consola sin errores
+- ✅ Funcionalidad operativa
+- ✅ Rendimiento estable
+APROBACIÓN USUARIO: [Sí/No] - [Comentarios]
+ISSUES ENCONTRADOS: [Ninguno/Descripción]
+```
+
+**2. Checklist de Verificación por Etapa**
+- [ ] **Análisis de Requisitos**: Objetivos claros definidos
+- [ ] **Implementación**: Código desarrollado según especificaciones
+- [ ] **Testing Automático**: Todos los tests pasados
+- [ ] **Demo al Usuario**: Funcionalidad mostrada y explicada
+- [ ] **Aprobación**: Confirmación explícita del usuario
+- [ ] **Documentación**: Cambios registrados en log
+- [ ] **Backup**: Versión anterior guardada
+
+#### Control de Versiones
+**Nomenclatura de Versiones:**
+- `v1.0.0` - Versión base actual
+- `v1.1.0` - Fase 1 completada (NPCs mejorados)
+- `v1.2.0` - Fase 2 completada (Realismo arquitectónico)
+- `v1.3.0` - Fase 3 completada (Tráfico inteligente)
+- `v1.4.0` - Fase 4 completada (Condiciones ambientales)
+- `v1.5.0` - Fase 5 completada (Audio ambiental)
+- `v2.0.0` - Fase 6 completada (Interactividad completa)
+
+**Archivos de Control:**
+- `CHANGELOG.md` - Registro detallado de cambios
+- `VERSION_HISTORY.md` - Historial de versiones con screenshots
+- `TESTING_REPORTS/` - Carpeta con reportes de testing por versión
+
+#### Métricas de Seguimiento
+**Por cada etapa se medirá:**
+- **Tiempo de Implementación**: Horas dedicadas
+- **Líneas de Código**: Añadidas/Modificadas/Eliminadas
+- **Rendimiento**: FPS antes/después
+- **Errores**: Cantidad y tipo de bugs encontrados
+- **Satisfacción Usuario**: Escala 1-10
+
+#### Procedimiento de Avance
+**Antes de cada nueva etapa:**
+1. Revisar checklist de etapa anterior
+2. Confirmar que todos los criterios están ✅
+3. Crear backup de versión actual
+4. Actualizar documentación de progreso
+5. Obtener aprobación para continuar
+
+**Durante la implementación:**
+1. Commits frecuentes con mensajes descriptivos
+2. Testing continuo en cada cambio significativo
+3. Comunicación constante con el usuario
+4. Documentación en tiempo real
+
+**Al finalizar cada etapa:**
+1. Testing completo según protocolo
+2. Demo visual al usuario
+3. Actualización de métricas
+4. Registro en log de implementación
+5. Preparación para siguiente etapa
+
+#### Herramientas de Seguimiento
+- **Git**: Control de versiones del código
+- **Markdown**: Documentación legible
+- **Screenshots**: Evidencia visual del progreso
+- **Performance Monitor**: Métricas de rendimiento
+- **Browser DevTools**: Debugging y profiling
+
 ---
 
 ## Cronograma de Desarrollo
