@@ -144,12 +144,29 @@
 
 ## Implementación Técnica
 
-### Tecnologías Recomendadas
-- **Three.js**: Mantener como motor gráfico principal
-- **Mixamo**: Para animaciones de personajes
+### Tecnologías Actuales y Recomendadas
+- **Three.js**: Motor gráfico principal (ya implementado)
+- **OrbitControls**: Control de cámara (ya implementado)
+- **GLTFLoader**: Carga de modelos 3D (ya implementado para .glb)
+- **FBXLoader**: Para modelos con animaciones (parcialmente implementado)
+- **Mixamo**: Para animaciones de personajes (recomendado)
 - **Blender**: Para modelado 3D personalizado
-- **Web Audio API**: Para sistema de audio espacial
-- **Web Workers**: Para cálculos de pathfinding pesados
+- **Web Audio API**: Para sistema de audio espacial (nuevo)
+- **Web Workers**: Para cálculos de pathfinding pesados (nuevo)
+
+### Integración con Código Existente
+#### Archivos Base a Mantener
+- **main.js**: Punto de entrada principal
+- **scene.js**: Configuración de escena Three.js
+- **config.js**: Configuraciones globales
+- **lighting.js**: Sistema de iluminación día/noche
+- **buildings.js**: Generación procedural de edificios
+- **traffic.js**: Sistema básico de tráfico
+- **textures.js**: Gestión de materiales y texturas
+
+#### Archivos a Evolucionar
+- **pedestrian_functions.js** → **pedestrian-system.js**: Expandir funcionalidad de NPCs
+- **models.js**: Integrar con nuevo sistema de carga de personajes animados
 
 ### Optimizaciones de Rendimiento
 - **Level of Detail (LOD)**: Diferentes niveles de detalle según distancia
@@ -157,58 +174,149 @@
 - **Frustum Culling**: No renderizar objetos fuera de vista
 - **Texture Atlasing**: Combinar texturas para reducir draw calls
 
-### Estructura de Archivos Propuesta
+### Estructura de Archivos Actual y Propuesta de Reorganización
+
+#### Estructura Actual
+```
+ciudad2/
+├── index.html
+├── js/
+│   ├── buildings.js
+│   ├── city.js
+│   ├── config.js
+│   ├── lighting.js
+│   ├── main.js
+│   ├── models.js
+│   ├── scene.js
+│   ├── textures.js
+│   └── traffic.js
+├── models/
+│   ├── car.glb
+│   ├── truck.glb
+│   └── walking.fbx
+├── pedestrian_functions.js
+├── bus.obj
+├── car.obj
+└── truck.obj
+```
+
+#### Estructura Propuesta (Evolución Gradual)
 ```
 ciudad2/
 ├── index.html
 ├── js/
 │   ├── core/
-│   │   ├── scene-manager.js
-│   │   ├── lighting-system.js
-│   │   └── camera-controller.js
+│   │   ├── main.js (existente)
+│   │   ├── scene.js (existente)
+│   │   ├── config.js (existente)
+│   │   └── camera-controller.js (nuevo)
 │   ├── entities/
-│   │   ├── pedestrian-system.js
-│   │   ├── vehicle-system.js
-│   │   └── building-generator.js
+│   │   ├── buildings.js (existente)
+│   │   ├── traffic.js (existente)
+│   │   ├── models.js (existente)
+│   │   └── pedestrian-system.js (evolución de pedestrian_functions.js)
+│   ├── rendering/
+│   │   ├── lighting.js (existente)
+│   │   ├── textures.js (existente)
+│   │   └── materials.js (nuevo)
 │   ├── ai/
-│   │   ├── pathfinding.js
-│   │   └── behavior-tree.js
+│   │   ├── pathfinding.js (nuevo)
+│   │   └── behavior-tree.js (nuevo)
 │   ├── audio/
-│   │   └── ambient-sound.js
+│   │   └── ambient-sound.js (nuevo)
 │   └── ui/
-│       └── interface.js
+│       └── interface.js (nuevo)
 ├── models/
 │   ├── characters/
+│   │   └── walking.fbx (existente)
 │   ├── vehicles/
-│   └── buildings/
-├── textures/
-├── sounds/
-└── shaders/
+│   │   ├── car.glb (existente)
+│   │   ├── truck.glb (existente)
+│   │   ├── bus.obj (mover desde raíz)
+│   │   ├── car.obj (mover desde raíz)
+│   │   └── truck.obj (mover desde raíz)
+│   └── buildings/ (nuevo)
+├── textures/ (nuevo)
+├── sounds/ (nuevo)
+└── shaders/ (nuevo)
 ```
+
+#### Plan de Migración
+1. **Fase 1**: Reorganizar archivos existentes en subcarpetas
+2. **Fase 2**: Mover modelos .obj a la carpeta models/vehicles/
+3. **Fase 3**: Integrar pedestrian_functions.js en el nuevo sistema
+4. **Fase 4**: Añadir nuevas funcionalidades manteniendo compatibilidad
+
+### Aprovechamiento de Assets Existentes
+
+#### Modelos 3D Disponibles
+- **walking.fbx**: Base para sistema de peatones animados
+- **car.glb, truck.glb**: Vehículos optimizados para el motor
+- **bus.obj, car.obj, truck.obj**: Modelos adicionales para variedad
+
+#### Funcionalidades Base
+- **Sistema de Grid**: Aprovechar la generación procedural existente
+- **Ciclo Día/Noche**: Expandir el sistema de lighting.js actual
+- **Controles de Cámara**: Mantener OrbitControls como base
+- **Gestión de Texturas**: Utilizar textures.js como fundamento
+
+#### Consideraciones de Compatibilidad
+- Mantener la API existente durante la transición
+- Implementar nuevas funciones como extensiones opcionales
+- Preservar el rendimiento actual como línea base
+- Documentar cambios para facilitar la migración
 
 ---
 
 ## Cronograma de Desarrollo
 
 ### Mes 1-2: Fundamentos de NPCs
-- Implementar modelos bípedos básicos
-- Sistema de animaciones
-- Navegación mejorada
+**Archivos a Modificar:**
+- Evolucionar `pedestrian_functions.js` → `js/entities/pedestrian-system.js`
+- Expandir `models.js` para soporte de animaciones FBX
+- Crear `js/ai/pathfinding.js` para navegación A*
+- Añadir modelos de personajes en `models/characters/`
+
+**Objetivos:**
+- Implementar modelos bípedos básicos con walking.fbx existente
+- Sistema de animaciones con Three.js AnimationMixer
+- Navegación mejorada con evitación de obstáculos
 
 ### Mes 3-4: Realismo Visual
-- Edificios detallados
-- Mobiliario urbano
-- Mejoras en iluminación
+**Archivos a Modificar:**
+- Expandir `buildings.js` con variaciones arquitectónicas
+- Mejorar `lighting.js` con iluminación interior de edificios
+- Crear `js/rendering/materials.js` para nuevos materiales
+- Añadir modelos en `models/buildings/`
+
+**Objetivos:**
+- Edificios con interiores visibles
+- Mobiliario urbano procedural
+- Mejoras en sistema de iluminación existente
 
 ### Mes 5-6: Sistemas Avanzados
-- Tráfico inteligente
-- Sistema climático
-- Audio ambiental
+**Archivos a Modificar:**
+- Expandir `traffic.js` con IA de vehículos
+- Crear `js/audio/ambient-sound.js`
+- Reorganizar modelos de vehículos en `models/vehicles/`
+- Añadir `js/ai/behavior-tree.js`
+
+**Objetivos:**
+- Tráfico inteligente con semáforos
+- Sistema climático con efectos de partículas
+- Audio ambiental espacial 3D
 
 ### Mes 7-8: Pulido e Interactividad
+**Archivos a Modificar:**
+- Crear `js/ui/interface.js` para controles
+- Optimizar todos los archivos existentes
+- Implementar LOD en `scene.js`
+- Crear `shaders/` personalizados
+
+**Objetivos:**
 - Optimizaciones de rendimiento
-- Elementos interactivos
-- Testing y debugging
+- Elementos interactivos y UI
+- Testing y debugging completo
 
 ---
 
