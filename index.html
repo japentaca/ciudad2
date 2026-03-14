@@ -90,7 +90,18 @@
     <h3 class="panel-title">Simulador de Ciudad 3D</h3>
     <button id="toggleDayNight">Alternar Día/Noche</button>
     <button id="generateCity">Generar Nueva Ciudad</button>
-    <div class="controls">
+      <div class="controls">
+      <div class="control">
+        <label for="roadNetwork">
+          <span>Tipo de red viaria</span>
+        </label>
+        <select id="roadNetwork">
+          <option value="grid">Cuadrícula</option>
+          <option value="radial">Radial</option>
+          <option value="organic">Orgánica</option>
+          <option value="hybrid">Híbrida</option>
+        </select>
+      </div>
       <div class="control">
         <label for="timeSpeed">
           <span>Velocidad del tiempo</span>

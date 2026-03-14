@@ -1,4 +1,54 @@
 // Configuración global del simulador de ciudad
+
+// ── Enums ──────────────────────────────────────────────
+export const PLOT_TYPES = Object.freeze({
+    BUILDING: 'building',
+    ROAD: 'road',
+    PARK: 'park',
+    PLAZA: 'plaza'
+});
+
+export const ROAD_TYPES = Object.freeze({
+    AVENUE: 'avenue',
+    STREET: 'street'
+});
+
+export const ROAD_AXES = Object.freeze({
+    X: 'x',
+    Z: 'z',
+    INTERSECTION: 'intersection'
+});
+
+export const DISTRICTS = Object.freeze({
+    CENTER: 'center',
+    COMMERCIAL: 'commercial',
+    RESIDENTIAL: 'residential',
+    GREEN: 'green'
+});
+
+export const NETWORK_TYPES = Object.freeze({
+    GRID: 'grid',
+    RADIAL: 'radial',
+    ORGANIC: 'organic',
+    HYBRID: 'hybrid'
+});
+
+export const WEATHER_MODES = Object.freeze({
+    CLEAR: 'clear',
+    FOG: 'fog',
+    RAIN: 'rain'
+});
+
+// ── Runtime state (mutable at runtime, separate from CONFIG) ──
+export const runtimeState = {
+    roadNetworkType: 'grid',
+    numVehicles: 50,
+    numPedestrians: 25,
+    timeSpeedMultiplier: 1,
+    cycleSpeed: 0.02
+};
+
+// ── Immutable configuration ────────────────────────────
 export const CONFIG = {
     // Dimensiones base
     citySize: 1300,
@@ -10,14 +60,8 @@ export const CONFIG = {
 
     // Parámetros de simulación
     baseCycleSpeed: 0.02,
-    cycleSpeed: 0.02,
-    timeSpeedMultiplier: 1,
     uiRefreshInterval: 0.25,
     debugLogging: false,
-
-    // Densidades activas
-    numVehicles: 50,
-    numPedestrians: 25,
 
     // Configuración de iluminación
     lightHeight: 15,
@@ -38,7 +82,9 @@ export const CONFIG = {
         rowJitter: [0, 0, 1, -1],
         parkProbability: 0.1,
         plazaProbability: 0.06,
-        landmarkProbability: 0.08
+        landmarkProbability: 0.08,
+        radialRings: 4,
+        radialSpokes: 8
     },
 
     districts: {

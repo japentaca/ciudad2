@@ -1,6 +1,6 @@
 // Módulo de iluminación y ciclo día/noche
 import * as THREE from 'three';
-import { CONFIG } from './config.js';
+import { CONFIG, runtimeState } from './config.js';
 
 export class LightingManager {
     constructor(scene, renderer = null) {
@@ -99,7 +99,7 @@ export class LightingManager {
     }
 
     updateDayNightCycle(deltaTime) {
-        this.timeOfDay = (this.timeOfDay + deltaTime * CONFIG.cycleSpeed) % 1;
+        this.timeOfDay = (this.timeOfDay + deltaTime * runtimeState.cycleSpeed) % 1;
 
         // Posición del sol: arco correcto — máxima altura (Y=300) al mediodía (t=0.5)
         const sunElevation = this.timeOfDay * Math.PI; // 0=medianoche, π/2=mediodía

@@ -1,6 +1,6 @@
 // Módulo de sistema de tráfico
 import * as THREE from 'three';
-import { CONFIG } from './config.js';
+import { CONFIG, runtimeState } from './config.js';
 
 export class TrafficManager {
   constructor(scene) {
@@ -21,7 +21,7 @@ export class TrafficManager {
   }
 
   setVehicleCount(count) {
-    CONFIG.numVehicles = count;
+    runtimeState.numVehicles = count;
   }
 
   setNavigationData(navigationData) {
@@ -146,7 +146,7 @@ export class TrafficManager {
       { type: 'truck', speedRange: [16, 24] }
     ];
 
-    for (let index = 0; index < CONFIG.numVehicles; index++) {
+    for (let index = 0; index < runtimeState.numVehicles; index++) {
       const vehicleType = vehicleTypes[THREE.MathUtils.randInt(0, vehicleTypes.length - 1)];
       const vehicleMesh = this.createVehicleMesh(vehicleType.type);
       const vehicle = {

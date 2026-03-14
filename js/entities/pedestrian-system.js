@@ -1,7 +1,7 @@
 // Sistema avanzado de peatones con modelos FBX animados
 import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
-import { CONFIG } from '../config.js';
+import { CONFIG, runtimeState } from '../config.js';
 
 export class PedestrianSystem {
   constructor(scene) {
@@ -14,7 +14,7 @@ export class PedestrianSystem {
     this.navigationNetwork = null;
     this.signalResolver = null;
     this.config = {
-      numPedestrians: CONFIG.numPedestrians,
+      numPedestrians: runtimeState.numPedestrians,
       walkSpeed: { min: CONFIG.pedestrians.walkSpeedMin, max: CONFIG.pedestrians.walkSpeedMax },
       animationSpeed: { min: CONFIG.pedestrians.animationSpeedMin, max: CONFIG.pedestrians.animationSpeedMax },
       referenceWalkSpeed: CONFIG.pedestrians.referenceWalkSpeed,
@@ -46,7 +46,7 @@ export class PedestrianSystem {
 
   setPedestrianCount(count) {
     this.config.numPedestrians = count;
-    CONFIG.numPedestrians = count;
+    runtimeState.numPedestrians = count;
   }
 
   setModel(model) {
@@ -192,15 +192,8 @@ export class PedestrianSystem {
 
   async createPedestrians() {
     if (!this.isModelLoaded) {
-      let attempts = 0;
-      while (!this.isModelLoaded && attempts < 50) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
-      if (!this.isModelLoaded) {
-        console.error('Timeout esperando el modelo de peatón');
-        return;
-      }
+      console.warn('Modelo de peatón no cargado, omitiendo creación de peatones');
+      return;
     }
 
     this.clearPedestrians();

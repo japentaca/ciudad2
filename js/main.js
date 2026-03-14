@@ -6,7 +6,8 @@ import { BuildingManager } from './buildings.js';
 import { TrafficManager } from './traffic.js';
 import { ModelLoader } from './models.js';
 import { PedestrianSystem } from './entities/pedestrian-system.js';
-import { CONFIG } from './config.js';
+import { UIManager } from './ui.js';
+import { CONFIG, runtimeState } from './config.js';
 
 export class CitySimulator {
   constructor() {
@@ -17,24 +18,11 @@ export class CitySimulator {
     this.trafficManager = null;
     this.modelLoader = null;
     this.pedestrianSystem = null;
+    this.ui = new UIManager();
 
     this.population = 0;
     this.isInitialized = false;
     this.statsUpdateAccumulator = 0;
-    this.ui = {
-      toggleDayNightButton: null,
-      generateCityButton: null,
-      timeSpeed: null,
-      timeSpeedValue: null,
-      vehicleDensity: null,
-      vehicleDensityValue: null,
-      pedestrianDensity: null,
-      pedestrianDensityValue: null,
-      timeOfDay: null,
-      population: null,
-      vehicleCount: null,
-      pedestrianCount: null
-    };
   }
 
   async init() {
@@ -44,7 +32,8 @@ export class CitySimulator {
 
       this.sceneManager = new SceneManager();
       this.sceneManager.init();
-      this.cacheUIElements();
+
+      this.ui.init();
 
       this.lightingManager = new LightingManager(this.sceneManager.scene, this.sceneManager.renderer);
       this.lightingManager.init();
@@ -59,9 +48,9 @@ export class CitySimulator {
 
       this.generateCity();
       this.setupEventListeners();
+      this.isInitialized = true;
       this.animate();
 
-      this.isInitialized = true;
       console.log('Simulador de ciudad inicializado correctamente');
     } catch (error) {
       console.error('Error inicializando el simulador:', error);
@@ -76,7 +65,9 @@ export class CitySimulator {
     this.population = this.buildingManager.getPopulation();
     this.buildingManager.setNightFactor(this.lightingManager.getNightFactor());
 
-    this.addStreetLights(navigationData.streetLightPositions);
+    navigationData.streetLightPositions.forEach(position => {
+      this.lightingManager.addStreetLight(position);
+    });
 
     this.trafficManager.setNavigationData(navigationData);
     this.trafficManager.createTraffic(cityGrid, navigationData);
@@ -95,71 +86,23 @@ export class CitySimulator {
     this.updateStatsDisplay();
   }
 
-  cacheUIElements() {
-    this.ui.toggleDayNightButton = document.getElementById('toggleDayNight');
-    this.ui.generateCityButton = document.getElementById('generateCity');
-    this.ui.timeSpeed = document.getElementById('timeSpeed');
-    this.ui.timeSpeedValue = document.getElementById('timeSpeedValue');
-    this.ui.vehicleDensity = document.getElementById('vehicleDensity');
-    this.ui.vehicleDensityValue = document.getElementById('vehicleDensityValue');
-    this.ui.pedestrianDensity = document.getElementById('pedestrianDensity');
-    this.ui.pedestrianDensityValue = document.getElementById('pedestrianDensityValue');
-    this.ui.timeOfDay = document.getElementById('timeOfDay');
-    this.ui.population = document.getElementById('population');
-    this.ui.vehicleCount = document.getElementById('vehicleCount');
-    this.ui.pedestrianCount = document.getElementById('pedestrianCount');
-
-    if (this.ui.timeSpeed) this.ui.timeSpeed.value = String(CONFIG.timeSpeedMultiplier);
-    if (this.ui.timeSpeedValue) this.ui.timeSpeedValue.textContent = `${CONFIG.timeSpeedMultiplier.toFixed(2)}x`;
-    if (this.ui.vehicleDensity) this.ui.vehicleDensity.value = String(CONFIG.numVehicles);
-    if (this.ui.vehicleDensityValue) this.ui.vehicleDensityValue.textContent = String(CONFIG.numVehicles);
-    if (this.ui.pedestrianDensity) this.ui.pedestrianDensity.value = String(CONFIG.numPedestrians);
-    if (this.ui.pedestrianDensityValue) this.ui.pedestrianDensityValue.textContent = String(CONFIG.numPedestrians);
-  }
-
-  addStreetLights(streetLightPositions) {
-    streetLightPositions.forEach(position => {
-      this.lightingManager.addStreetLight(position);
-    });
-  }
-
   setupEventListeners() {
-    this.ui.toggleDayNightButton?.addEventListener('click', () => {
-      this.lightingManager.toggleDayNight();
-      this.updateStatsDisplay();
-    });
-
-    this.ui.generateCityButton?.addEventListener('click', () => {
-      this.regenerateCity();
-    });
-
-    this.ui.timeSpeed?.addEventListener('input', event => {
-      const value = Number(event.target.value);
-      CONFIG.timeSpeedMultiplier = value;
-      CONFIG.cycleSpeed = CONFIG.baseCycleSpeed * value;
-      if (this.ui.timeSpeedValue) {
-        this.ui.timeSpeedValue.textContent = `${value.toFixed(2)}x`;
+    this.ui.bind({
+      onToggleDayNight: () => {
+        this.lightingManager.toggleDayNight();
+        this.updateStatsDisplay();
+      },
+      onGenerateCity: () => this.regenerateCity(),
+      onRoadNetworkChange: () => this.regenerateCity(),
+      onVehicleDensityChange: (value) => {
+        this.trafficManager.setVehicleCount(value);
+        this.refreshTraffic();
+      },
+      onPedestrianDensityChange: (value) => {
+        this.pedestrianSystem.setPedestrianCount(value);
+        this.refreshPedestrians();
       }
     });
-
-    this.ui.vehicleDensity?.addEventListener('input', event => {
-      const value = Number(event.target.value);
-      this.trafficManager.setVehicleCount(value);
-      if (this.ui.vehicleDensityValue) {
-        this.ui.vehicleDensityValue.textContent = String(value);
-      }
-      this.refreshTraffic();
-    });
-
-    this.ui.pedestrianDensity?.addEventListener('input', event => {
-      const value = Number(event.target.value);
-      this.pedestrianSystem.setPedestrianCount(value);
-      if (this.ui.pedestrianDensityValue) {
-        this.ui.pedestrianDensityValue.textContent = String(value);
-      }
-      this.refreshPedestrians();
-    });
-
   }
 
   regenerateCity() {
@@ -183,31 +126,18 @@ export class CitySimulator {
   }
 
   updateStatsDisplay() {
-    const timeString = this.lightingManager.getTimeString();
-
-    if (this.ui.timeOfDay) {
-      this.ui.timeOfDay.textContent = timeString;
-    }
-
-    if (this.ui.population) {
-      this.ui.population.textContent = this.population.toLocaleString();
-    }
-
-    if (this.ui.vehicleCount) {
-      this.ui.vehicleCount.textContent = String(this.trafficManager ? this.trafficManager.getVehicleCount() : 0);
-    }
-
-    if (this.ui.pedestrianCount) {
-      this.ui.pedestrianCount.textContent = String(this.pedestrianSystem ? this.pedestrianSystem.getPedestrianCount() : 0);
-    }
+    this.ui.updateStats({
+      timeString: this.lightingManager.getTimeString(),
+      population: this.population,
+      vehicleCount: this.trafficManager ? this.trafficManager.getVehicleCount() : 0,
+      pedestrianCount: this.pedestrianSystem ? this.pedestrianSystem.getPedestrianCount() : 0
+    });
   }
 
   animate() {
     requestAnimationFrame(() => this.animate());
 
-    if (!this.isInitialized) {
-      return;
-    }
+    if (!this.isInitialized) return;
 
     const deltaTime = this.sceneManager.getDeltaTime();
 
