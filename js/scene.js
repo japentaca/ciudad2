@@ -12,6 +12,7 @@ export class SceneManager {
         this.controls = null;
         this.stats = null;
         this.clock = new THREE.Clock();
+        this.resizeHandler = null;
     }
 
     init() {
@@ -49,7 +50,8 @@ export class SceneManager {
         document.body.appendChild(this.stats.dom);
 
         // Configurar redimensionamiento de ventana
-        window.addEventListener('resize', this.onWindowResize.bind(this));
+        this.resizeHandler = this.onWindowResize.bind(this);
+        window.addEventListener('resize', this.resizeHandler);
     }
 
     onWindowResize() {
@@ -69,5 +71,30 @@ export class SceneManager {
 
     getDeltaTime() {
         return this.clock.getDelta();
+    }
+
+    dispose() {
+        if (this.resizeHandler) {
+            window.removeEventListener('resize', this.resizeHandler);
+            this.resizeHandler = null;
+        }
+
+        if (this.controls) {
+            this.controls.dispose();
+            this.controls = null;
+        }
+
+        if (this.renderer) {
+            if (this.renderer.domElement.parentNode) {
+                this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+            }
+            this.renderer.dispose();
+            this.renderer = null;
+        }
+
+        if (this.stats?.dom?.parentNode) {
+            this.stats.dom.parentNode.removeChild(this.stats.dom);
+        }
+        this.stats = null;
     }
 }

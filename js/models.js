@@ -1,14 +1,16 @@
 // Módulo de carga de modelos 3D
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import * as THREE from 'three';
 
 export class ModelLoader {
     constructor() {
-        this.loader = new GLTFLoader();
+        this.gltfLoader = new GLTFLoader();
+        this.fbxLoader = new FBXLoader();
         this.carModel = null;
         this.truckModel = null;
         this.loadedModels = 0;
-        this.totalModels = 2;
+        this.totalModels = 2; // Solo coche y camión
     }
 
     async loadModels() {
@@ -25,7 +27,7 @@ export class ModelLoader {
             };
 
             // Cargar modelo de coche
-            this.loader.load(
+            this.gltfLoader.load(
                 'models/car.glb',
                 (gltf) => {
                     this.carModel = gltf.scene;
@@ -51,7 +53,7 @@ export class ModelLoader {
             );
 
             // Cargar modelo de camión
-            this.loader.load(
+            this.gltfLoader.load(
                 'models/truck.glb',
                 (gltf) => {
                     this.truckModel = gltf.scene;

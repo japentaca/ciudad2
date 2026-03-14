@@ -27,6 +27,35 @@
       padding: 10px;
       border-radius: 5px;
       z-index: 1000;
+      min-width: 280px;
+    }
+
+    .panel-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .control {
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .control input,
+    .control select {
+      width: 100%;
     }
 
     #stats-display {
@@ -58,13 +87,38 @@
 <body>
   <div id="container"></div>
   <div id="ui">
-    <h3>Simulador de Ciudad 3D</h3>
+    <h3 class="panel-title">Simulador de Ciudad 3D</h3>
     <button id="toggleDayNight">Alternar Día/Noche</button>
     <button id="generateCity">Generar Nueva Ciudad</button>
+    <div class="controls">
+      <div class="control">
+        <label for="timeSpeed">
+          <span>Velocidad del tiempo</span>
+          <span id="timeSpeedValue">1.00x</span>
+        </label>
+        <input id="timeSpeed" type="range" min="0" max="4" step="0.25" value="1">
+      </div>
+      <div class="control">
+        <label for="vehicleDensity">
+          <span>Densidad de tráfico</span>
+          <span id="vehicleDensityValue">50</span>
+        </label>
+        <input id="vehicleDensity" type="range" min="10" max="120" step="5" value="50">
+      </div>
+      <div class="control">
+        <label for="pedestrianDensity">
+          <span>Densidad peatonal</span>
+          <span id="pedestrianDensityValue">25</span>
+        </label>
+        <input id="pedestrianDensity" type="range" min="8" max="80" step="4" value="25">
+      </div>
+    </div>
     <div id="stats-display">
       <strong>Estadísticas:</strong><br>
       Tiempo: <span id="timeOfDay">Día</span><br>
-      Población: <span id="population">0</span>
+      Población: <span id="population">0</span><br>
+      Vehículos: <span id="vehicleCount">0</span><br>
+      Peatones: <span id="pedestrianCount">0</span>
     </div>
     <div class="info">
       <strong>Controles:</strong><br>
@@ -78,8 +132,7 @@
     {
       "imports": {
         "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
-        "pedestrian_functions": "./pedestrian_functions.js"
+        "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
       }
     }
   </script>
